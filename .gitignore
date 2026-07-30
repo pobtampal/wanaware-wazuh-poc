@@ -1,0 +1,17 @@
+# === secrets / keys — never commit ===
+*.pem
+*.key
+*.env
+client.keys
+
+# === upstream clone: re-clonable at tag v4.14.5; holds live webhooks, TLS keys, creds, its own .git ===
+wazuh-docker/
+
+# === backups: data + secrets, large ===
+backups/
+
+# === binaries / editor backups / OS junk ===
+*.pkg
+*.bak
+*.bak.*
+.DS_Store

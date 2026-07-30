@@ -1,0 +1,8 @@
+<!-- Phase 8 custom rule: downgrade noisy netstat rule 533 below the level-7 Slack threshold.
+     Add to the manager's /var/ossec/etc/rules/local_rules.xml (lives in the wazuh_etc volume). -->
+<group name="local,netstat_tuning,">
+  <rule id="100533" level="3">
+    <if_sid>533</if_sid>
+    <description>Listened ports status changed - downgraded (routine on POC host; below level-7 Slack threshold).</description>
+  </rule>
+</group>
