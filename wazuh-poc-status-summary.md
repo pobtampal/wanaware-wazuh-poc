@@ -82,7 +82,7 @@ Highest-value first:
 ## Critical path when work resumes
 
 - **Everything unblocked and desk-researchable is done.** The critical path now runs through **Jeff / the GCP change request** — GCP + NinjaOne log volume is the single largest unmeasured variable and is a dependency for Phase 7 *and* for finalizing the Phase 3/5 storage & cost numbers.
-- **Current stack:** local Mac stack v4.14.5 (known-good, config untouched, repo-default creds, localhost-only) **+ a parallel DigitalOcean droplet** (`143.244.180.78`, sfo3, s-4vcpu-8gb, hardened, creds rotated, backups on) added 2026-07-30 as an off-laptop host — **parallel to, not a replacement for, the pending GCP shared-host plan**. Both managers post to the same Slack webhooks. macOS-agent→droplet enrollment is untested (Phase 10). Reminder: **revoke the DO API token** pasted in chat.
+- **Current stack:** local Mac stack v4.14.5 (known-good, config untouched, repo-default creds, localhost-only) **+ a parallel DigitalOcean droplet** (`143.244.180.78`, sfo3, s-4vcpu-8gb, hardened, creds rotated, backups on) added 2026-07-30 as an off-laptop host — **parallel to, not a replacement for, the pending GCP shared-host plan**. The **droplet's Slack integration is disabled** (de-dup, 2026-07-30) so the **Mac stack is the sole live Slack alerting source**; the one-time ~162-message CIS/SCA burst to `#wazuh-alerts` from the test agent is resolved (agent removed). macOS-agent→droplet enrollment is untested (Phase 10). **Repo:** private GitHub `pobtampal/wanaware-wazuh-poc` (docs/templates/scripts; secrets excluded). Reminder: **revoke the DO API token** pasted in chat.
 
 ---
 
