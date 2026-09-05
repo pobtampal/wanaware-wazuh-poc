@@ -1,0 +1,51 @@
+# NinjaOne → Wazuh ingestion — DRAFT (NOT enabled)
+
+**Status:** BLOCKED on infra providing NinjaOne API credentials. Nothing here is live.
+NinjaOne has no native Wazuh module, so we bridge it. Two viable approaches:
+
+## Approach A (recommended): API poll → log file → logcollector
+A small poller authenticates to the NinjaOne REST API, pulls activities/alerts on an
+interval, appends them as JSON lines to a log file, and Wazuh's `logcollector` reads that
+file like any other log source.
+
+**Placeholders to fill (from infra — keep OUT of git):**
+`<NINJAONE_INSTANCE_REGION>` (e.g. app / eu / oc), `<NINJAONE_CLIENT_ID>`,
+`<NINJAONE_CLIENT_SECRET>`, `<NINJAONE_SCOPE>` (e.g. `monitoring`).
+
+1. **Poller** (cron / launchd / sidecar), pseudo-flow — store secrets in env, not in code:
+   ```bash
+   # OAuth2 client-credentials token
+   TOKEN=$(curl -s -X POST "https://<NINJAONE_INSTANCE_REGION>.ninjarmm.com/ws/oauth/token" \
+     -d "grant_type=client_credentials" \
+     -d "client_id=$NINJAONE_CLIENT_ID" -d "client_secret=$NINJAONE_CLIENT_SECRET" \
+     -d "scope=$NINJAONE_SCOPE" | jq -r .access_token)
+   # Pull activities since last run, append as one JSON object per line
+   curl -s "https://<NINJAONE_INSTANCE_REGION>.ninjarmm.com/v2/activities?after=$LAST_ID" \
+     -H "Authorization: Bearer $TOKEN" \
+     | jq -c '.activities[]' >> /var/log/ninjaone/activities.json
+   ```
+2. **Wazuh side** — append inside `<ossec_config>` on the manager (or the host running the
+   poller if it's an agent), then restart:
+   ```xml
+   <!-- NinjaOne activities via API poller (DRAFT — enable once poller + creds exist) -->
+   <!--
+   <localfile>
+     <log_format>json</log_format>
+     <location>/var/log/ninjaone/activities.json</location>
+   </localfile>
+   -->
+   ```
+3. Add decoders/rules to map NinjaOne fields to alert levels if you want severity routing.
+
+## Approach B: NinjaOne webhook → HTTP receiver → log file
+If the tenant supports outbound webhooks, point them at a small receiver that writes the
+payloads to `/var/log/ninjaone/activities.json`; then use the same `<localfile>` block as
+Approach A. Avoids polling/rate limits but needs an ingress endpoint.
+
+## Notes
+- Rate limits: NinjaOne API is paginated + rate-limited — page with `after`/cursor and
+  track the last id to avoid gaps/dupes.
+- Secrets: the client id/secret and token must live in env/secret store, never in the log
+  file, the Wazuh config, or git.
+- This adds ingest volume on top of endpoint telemetry — fold into the storage projection
+  once real volume is known.

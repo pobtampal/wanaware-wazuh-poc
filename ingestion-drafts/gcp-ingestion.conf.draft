@@ -1,0 +1,33 @@
+<!-- =====================================================================
+     GCP Pub/Sub ingestion — DRAFT, NOT ENABLED (entire block commented out).
+     Status: BLOCKED on the GCP change request (Jeff's approval). Do not enable
+     live without credentials — it will error on start.
+
+     To enable once approved:
+       1. In GCP: create a Pub/Sub topic + subscription; route the desired logs
+          to the topic via a Cloud Logging sink (Log Router).
+       2. Create a service account with role roles/pubsub.subscriber; download
+          its JSON key.
+       3. Copy the JSON key into the manager container under
+          /var/ossec/wodles/gcloud/credentials/ (do NOT commit it to git).
+       4. Fill the placeholders below, UNCOMMENT this block inside an
+          <ossec_config> in the manager config, then restart the manager.
+       5. Re-run the storage projection — GCP log volume is the dominant
+          unmeasured variable (per the Phase 3/5 docs).
+
+     Placeholders to fill:  <GCP_PROJECT_ID>  <PUBSUB_SUBSCRIPTION_NAME>
+                            <CREDENTIALS_JSON_FILENAME>
+     ===================================================================== -->
+<!--
+<ossec_config>
+  <gcp-pubsub>
+    <pull_on_start>yes</pull_on_start>
+    <interval>1m</interval>
+    <project_id><GCP_PROJECT_ID></project_id>
+    <subscription_name><PUBSUB_SUBSCRIPTION_NAME></subscription_name>
+    <credentials_file>/var/ossec/wodles/gcloud/credentials/<CREDENTIALS_JSON_FILENAME></credentials_file>
+    <max_messages>100</max_messages>
+    <logging>info</logging>
+  </gcp-pubsub>
+</ossec_config>
+-->

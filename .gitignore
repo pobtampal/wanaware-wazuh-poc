@@ -15,3 +15,16 @@ backups/
 *.bak
 *.bak.*
 .DS_Store
+
+# === added for repo push: logs, certs, secret-bearing config (never commit) ===
+.env
+*.log
+*.crt
+*.cer
+*.p12
+secrets*
+*credentials*
+certs/
+*_ssl_certs/
+ossec.conf
+ossec.conf.*
